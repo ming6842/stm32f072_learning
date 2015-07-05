@@ -6,5 +6,6 @@
 void SysTick_Handler(void);
 void RCC_Configuration(void);
 void GPIO_Configuration(void);
+void USART1_Initialization(void);
 
 #endif
