@@ -88,6 +88,7 @@ OBJS = Device/startup_stm32f0xx.o \
        $(ST)/src/stm32f0xx_rcc.o \
        $(ST)/src/stm32f0xx_gpio.o \
        $(ST)/src/stm32f0xx_usart.o \
+       $(ST)/src/stm32f0xx_misc.o \
 	   src/main.o \
 	   src/system_stm32f0xx.o
 

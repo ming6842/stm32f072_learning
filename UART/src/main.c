@@ -9,11 +9,12 @@ void SysTick_Handler(void) {
   	case 100:
   		tick = 0;
 
-      GPIOC->ODR ^= GPIO_Pin_6;
-      GPIOC->ODR ^= GPIO_Pin_7;
-      GPIOC->ODR ^= GPIO_Pin_8;
+      //GPIOC->ODR ^= GPIO_Pin_6;
+      //GPIOC->ODR ^= GPIO_Pin_7;
+      //GPIOC->ODR ^= GPIO_Pin_8;
       GPIOC->ODR ^= GPIO_Pin_9;
-
+      
+    USART_SendData(USART1, 'Y');
   		break;
   }
 }
@@ -42,7 +43,7 @@ void GPIO_Configuration(void){
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7 ;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF ;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOB, &GPIO_InitStructure);
 
@@ -66,9 +67,24 @@ void USART1_Initialization(void){
     USART_Init(USART1, &USART_InitStructure);
     USART_Cmd(USART1, ENABLE);
 
+    USART_ClearFlag(USART1, USART_FLAG_TC);
+
+    USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
+    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+
+    /* NVIC Initialization */
+    NVIC_InitTypeDef NVIC_InitStruct = {
+      .NVIC_IRQChannel = USART1_IRQn,
+      .NVIC_IRQChannelPriority = 0,
+      .NVIC_IRQChannelCmd = ENABLE
+    };
+    NVIC_Init(&NVIC_InitStruct);
+
 
 
 }
+
+uint8_t uart1_data ;
 
 int main(void)
 {
@@ -87,7 +103,19 @@ int main(void)
 	while(1){
 
 
-    USART_SendData(USART1, 'Y');
+  }
+
+}
+
+void USART1_IRQHandler(void)
+{
+  
+  if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) {
+    uart1_data = USART_ReceiveData(USART1);
+
+    //USART_SendData(USART1, uart1_data);
+
+    GPIOC->ODR ^= GPIO_Pin_6;
   }
 
 }
