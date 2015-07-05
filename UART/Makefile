@@ -78,18 +78,19 @@ ROOT=$(shell pwd)
 #CFLAGS += -I $(STD_PERIPH_LIB)/CMSIS/Include -I $(STD_PERIPH_LIB)/STM32F0xx_StdPeriph_Driver/inc
 #CFLAGS += -include $(STD_PERIPH_LIB)/stm32f0xx_conf.h
 
-SRCS += Device/startup_stm32f0xx.s # add startup file to build
+SRCS += Device/startup_stm32f072.s # add startup file to build
 
 # need if you want to build with -DUSE_CMSIS 
 #SRCS += stm32f0_discovery.c
 #SRCS += stm32f0_discovery.c stm32f0xx_it.c
 
-OBJS = Device/startup_stm32f0xx.o \
+OBJS = Device/startup_stm32f072.o \
        $(ST)/src/stm32f0xx_rcc.o \
        $(ST)/src/stm32f0xx_gpio.o \
        $(ST)/src/stm32f0xx_usart.o \
        $(ST)/src/stm32f0xx_misc.o \
 	   src/main.o \
+	   src/usart.o \
 	   src/system_stm32f0xx.o
 
 ###################################################
