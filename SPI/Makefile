@@ -31,9 +31,10 @@ OBJCOPY=arm-none-eabi-objcopy
 OBJDUMP=arm-none-eabi-objdump
 SIZE=arm-none-eabi-size
 LD=arm-none-eabi-gcc
+GDB=arm-none-eabi-gdb
 
 
-ARCH_FLAGS=-mlittle-endian -mcpu=cortex-m0  -march=armv6-m -mthumb -ffunction-sections -fdata-sections
+ARCH_FLAGS=-mlittle-endian -mcpu=cortex-m0  -march=armv6-m -mthumb 
 LDFLAGS += -Wl,--gc-sections -Wl,-Map=$(PROJECT).map
 LDFLAGS +=-Tstm32f0.ld 
 
@@ -57,7 +58,7 @@ CFLAGS_WARNING= \
 	-Wstrict-prototypes \
 	-Wmissing-parameter-type
 
-CFLAGS  = -Wall -g -std=c99 -Os $(ARCH_FLAGS)\
+CFLAGS  = -Wall -g -std=c99 -Os -O0 $(ARCH_FLAGS)\
 	${CFLAGS_INCLUDE} \
 	${CFLAGS_WARNING}
 #CFLAGS += -mlittle-endian -mthumb -mcpu=cortex-m0 -march=armv6s-m
@@ -87,11 +88,13 @@ SRCS += Device/startup_stm32f072.s # add startup file to build
 OBJS = Device/startup_stm32f072.o \
        $(ST)/src/stm32f0xx_rcc.o \
        $(ST)/src/stm32f0xx_gpio.o \
+       $(ST)/src/stm32f0xx_spi.o \
        $(ST)/src/stm32f0xx_usart.o \
        $(ST)/src/stm32f0xx_misc.o \
        $(ST)/src/stm32f0xx_dma.o \
 	   src/main.o \
 	   src/usart.o \
+	   src/spi.o \
 	   src/system_stm32f0xx.o
 
 ###################################################
@@ -142,6 +145,17 @@ flash_openocd: $(PROJECT).bin
 	-c "flash write_image erase $(PROJECT).elf" \
 	-c "verify_image $(PROJECT).elf" \
 	-c "reset run" -c shutdown
+
+#Make gdbtui
+gdbtui:
+	$(GDB) -tui -x ./st_util_init.gdb
+
+install:
+	make 
+	openocd -f config_openocd_stm32f0.cfg -c "stm_flash $(BIN_IMAGE)"	
+
+debug_server:
+	openocd -f config_openocd_stm32f0.cfg
 
 clean:
 	find ./ -name '*~' | xargs rm -f	

@@ -3,10 +3,10 @@
 
 #include "stm32f0xx_conf.h"
 #include "usart.h"
+#include "spi.h"
 
 void SysTick_Handler(void);
-void RCC_Configuration(void);
-void GPIO_Configuration(void);
+void LED_Configuration(void);
 void USART1_Initialization(void);
 
 #endif

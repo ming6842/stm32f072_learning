@@ -70,7 +70,7 @@ void USART3_Initialization(void){
     USART_InitTypeDef USART_InitStructure;
 
     USART_DeInit(USART3);
-    USART_InitStructure.USART_BaudRate = 57600;
+    USART_InitStructure.USART_BaudRate = 921600;
     USART_InitStructure.USART_WordLength = USART_WordLength_8b;
     USART_InitStructure.USART_StopBits = USART_StopBits_1;
     USART_InitStructure.USART_Parity = USART_Parity_No;
@@ -143,14 +143,15 @@ void usart3_dma_send_text(uint8_t *s){
     DMA_ClearFlag(DMA1_FLAG_GL7);
     DMA_ClearFlag(DMA1_FLAG_TE7);
 
-    DMA_DeInit(DMA1_Channel7);
+    // DMA_DeInit(DMA1_Channel7);
+    DMA_Cmd(DMA1_Channel7, DISABLE);
 
     DMA_InitTypeDef DMA_InitStructure = {
     /* Configure DMA Initialization Structure */
         .DMA_PeripheralBaseAddr = (uint32_t)(&(USART3->TDR)),
         .DMA_MemoryBaseAddr = (uint32_t)s,
         .DMA_DIR = DMA_DIR_PeripheralDST,
-        .DMA_BufferSize =  (uint32_t)strlen((const char *) s),
+        .DMA_BufferSize =  15,//(uint32_t)strlen((const char *) s),
         .DMA_PeripheralInc = DMA_PeripheralInc_Disable,
         .DMA_MemoryInc = DMA_MemoryInc_Enable,
         .DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte,
