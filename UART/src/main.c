@@ -41,6 +41,7 @@ void GPIO_Configuration(void){
 
 }
 
+uint8_t chartosend[] = "12345678901234567890A";
 
 int main(void)
 {
@@ -49,6 +50,7 @@ int main(void)
   GPIO_Configuration();
   USART1_Initialization();
   USART3_Initialization();
+  USART3_dma_init();
 
   GPIOC->ODR ^= GPIO_Pin_6;
   GPIOC->ODR ^= GPIO_Pin_7;
@@ -59,16 +61,25 @@ int main(void)
 
 	while(1){
 
-    if(damn_just_a_tick==1){
 
-      damn_just_a_tick =0;
+
+      if(DMA_GetFlagStatus( DMA1_FLAG_TC7) != RESET){
       GPIOC->ODR ^= GPIO_Pin_8;
+      usart3_dma_send_text(chartosend);
+      GPIOC->ODR ^= GPIO_Pin_8;
+      }
 
-      USART_SendData(USART1, 'Y');
-      USART_SendData(USART3, 'Y');
 
+    // if(damn_just_a_tick==1){
 
-    }
+    //   damn_just_a_tick =0;
+    //   GPIOC->ODR ^= GPIO_Pin_8;
+
+    //   USART_SendData(USART1, 'Y');
+    //   //USART_SendData(USART3, 'Y');
+    //   //USART3_dma_init();
+
+    // }
 
   }
 

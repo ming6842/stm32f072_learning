@@ -97,6 +97,77 @@ void USART3_Initialization(void){
 }
 
 
+void USART3_dma_init(void)
+{
+
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);
+
+    uint8_t dummy = 0;
+
+    /* DMA Initialization */
+    DMA_DeInit(DMA1_Channel7);
+    //while (DMA_GetCmdStatus(DMA1_Channel2) != DISABLE); //DMA_GetFlagStatus
+
+
+    DMA_InitTypeDef DMA_InitStructure = {
+    /* Configure DMA Initialization Structure */
+        .DMA_PeripheralBaseAddr = (uint32_t)(&(USART3->TDR)),
+        .DMA_MemoryBaseAddr = (uint32_t)&dummy,
+        .DMA_DIR = DMA_DIR_PeripheralDST,
+        .DMA_BufferSize =  (uint32_t)1,
+        .DMA_PeripheralInc = DMA_PeripheralInc_Disable,
+        .DMA_MemoryInc = DMA_MemoryInc_Enable,
+        .DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte,
+        .DMA_MemoryDataSize = DMA_MemoryDataSize_Byte,
+        .DMA_Mode = DMA_Mode_Normal,
+        .DMA_Priority = DMA_Priority_Medium,
+        .DMA_M2M = DMA_M2M_Disable
+
+    };
+  
+    DMA_Init(DMA1_Channel7, &DMA_InitStructure);
+    DMA_Cmd(DMA1_Channel7, ENABLE);
+
+    USART_DMACmd(USART3, USART_DMAReq_Tx, ENABLE);
+
+}
+
+
+void usart3_dma_send_text(uint8_t *s){
+
+
+    while (DMA_GetFlagStatus( DMA1_FLAG_TC7) == RESET);
+
+    DMA_ClearFlag(DMA1_FLAG_TC7);
+    DMA_ClearFlag(DMA1_FLAG_GL7);
+    DMA_ClearFlag(DMA1_FLAG_TE7);
+
+    DMA_DeInit(DMA1_Channel7);
+
+    DMA_InitTypeDef DMA_InitStructure = {
+    /* Configure DMA Initialization Structure */
+        .DMA_PeripheralBaseAddr = (uint32_t)(&(USART3->TDR)),
+        .DMA_MemoryBaseAddr = (uint32_t)s,
+        .DMA_DIR = DMA_DIR_PeripheralDST,
+        .DMA_BufferSize =  (uint32_t)strlen((const char *) s),
+        .DMA_PeripheralInc = DMA_PeripheralInc_Disable,
+        .DMA_MemoryInc = DMA_MemoryInc_Enable,
+        .DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte,
+        .DMA_MemoryDataSize = DMA_MemoryDataSize_Byte,
+        .DMA_Mode = DMA_Mode_Normal,
+        .DMA_Priority = DMA_Priority_Medium,
+        .DMA_M2M = DMA_M2M_Disable
+
+    };
+  
+    DMA_Init(DMA1_Channel7, &DMA_InitStructure);
+    DMA_Cmd(DMA1_Channel7, ENABLE);
+
+    USART_DMACmd(USART3, USART_DMAReq_Tx, ENABLE);
+
+
+}
 
 
 uint8_t uart1_data , uart3_data ;
